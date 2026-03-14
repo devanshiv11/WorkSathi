@@ -4,7 +4,7 @@
 
 ## 📖 About The Project
 
-**Ek Digital Labour Chowk** is a digital platform designed to modernize the traditional "Labour Chowk" experience. In India, millions of daily wage workers gather at physical locations (chowks) every morning to find work. This process is often disorganized, uncertain, and lacks dignity.
+**WorkSathi** is a digital platform designed to modernize the traditional "Labour Chowk" experience. In India, millions of daily wage workers gather at physical locations (chowks) every morning to find work. This process is often disorganized, uncertain, and lacks dignity.
 
 Our platform aims to:
 - **Digitize Identities:** Give every worker a verified digital profile.
