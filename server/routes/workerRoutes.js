@@ -1,86 +1,117 @@
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
-
-// In-memory store
-let workers = [];
+const Worker = require('../models/Worker');
 
 // POST /api/workers/register
 router.post('/register', async (req, res) => {
-    try {
-        const { name, mobile, skill, experience, location, dailyWage } = req.body;
+  console.log("Worker register request body:", req.body);
 
-        // Check if worker exists
-        const existing = workers.find(w => w.mobile === mobile);
-        if (existing) {
-            return res.status(400).json({ msg: 'Worker profile already exists', success: false });
-        }
+  try {
+    const { name, mobile, skill, experience, location, dailyWage } = req.body;
 
-        const newWorker = {
-            _id: uuidv4(),
-            name,
-            mobile,
-            skill,
-            experience,
-            location,
-            dailyWage,
-            isAvailable: true,
-            isVerified: false,
-            createdAt: new Date()
-        };
-
-        workers.push(newWorker);
-        console.log('Worker Registered:', newWorker);
-
-        res.json({ msg: 'Worker profile created successfully', success: true, worker: newWorker });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server Error', success: false });
+    // Validate required fields
+    if (!name || !mobile || !skill || !location) {
+      return res.status(400).json({ 
+        msg: 'Name, mobile, skill, and location are required', 
+        success: false 
+      });
     }
+
+    // Check if worker already exists
+    const existing = await Worker.findOne({ mobile });
+    if (existing) {
+      return res.status(400).json({ 
+        msg: 'Worker profile already exists', 
+        success: false 
+      });
+    }
+
+    // Create worker
+    const newWorker = await Worker.create({
+      name,
+      mobile,
+      skill,
+      experience: experience || '0 years',
+      location,
+      isAvailable: true,
+      isVerified: false,
+      dailyWage: dailyWage || 0
+    });
+
+    console.log('Worker Registered:', newWorker);
+
+    res.json({
+      success: true,
+      worker: newWorker,
+      msg: 'Worker registered successfully'
+    });
+
+  } catch (err) {
+    console.error('Worker Registration Error:', err);
+    res.status(500).json({ msg: 'Server Error', success: false });
+  }
+});
+
+// GET /api/workers/profile/:mobile - Get worker by mobile
+router.get('/profile/:mobile', async (req, res) => {
+  try {
+    const worker = await Worker.findOne({ mobile: req.params.mobile });
+
+    if (!worker) {
+      return res.status(404).json({ 
+        msg: 'Worker not found', 
+        success: false 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      worker 
+    });
+  } catch (err) {
+    console.error('Get worker profile error:', err);
+    res.status(500).json({ msg: 'Server Error', success: false });
+  }
 });
 
 // GET /api/workers/search?skill=Plumber&location=Delhi
 router.get('/search', async (req, res) => {
-    try {
-        const { skill, location } = req.query;
+  try {
+    const { skill, location } = req.query;
 
-        let results = workers.filter(w => w.isAvailable);
+    let query = { isAvailable: true };
 
-        if (skill && skill !== 'All') {
-            results = results.filter(w => w.skill === skill);
-        }
+    if (skill && skill !== 'All') query.skill = skill;
+    if (location) query.location = { $regex: location, $options: 'i' };
 
-        if (location) {
-            results = results.filter(w => w.location.toLowerCase().includes(location.toLowerCase()));
-        }
+    const results = await Worker.find(query);
 
-        res.json({ workers: results, success: true });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server Error', success: false });
-    }
+    res.json({ workers: results, success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server Error', success: false });
+  }
 });
 
 // PUT /api/workers/:id - Update worker profile
 router.put('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updates = req.body;
+  try {
+    const { id } = req.params;
+    const updates = req.body;
 
-        const index = workers.findIndex(w => w._id === id || w.mobile === id); // Support both ID and Mobile
+    const worker = await Worker.findByIdAndUpdate(id, updates, { new: true });
 
-        if (index === -1) {
-            return res.status(404).json({ msg: 'Worker not found', success: false });
-        }
-
-        workers[index] = { ...workers[index], ...updates };
-        console.log('Worker Updated:', workers[index]);
-
-        res.json({ msg: 'Profile updated', success: true, worker: workers[index] });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server Error', success: false });
+    if (!worker) {
+      return res.status(404).json({ msg: 'Worker not found', success: false });
     }
+
+    console.log('Worker Updated:', worker);
+
+    res.json({ msg: 'Profile updated', success: true, worker });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server Error', success: false });
+  }
 });
 
 module.exports = router;
