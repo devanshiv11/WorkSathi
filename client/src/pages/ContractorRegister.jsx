@@ -2,28 +2,20 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
+import { User, Smartphone, MapPin, Lock, Mail, Building2, FileText } from 'lucide-react';
 
-import {
-  User,
-  Smartphone,
-  MapPin,
-  Briefcase,
-  CheckCircle,
-  Lock
-} from 'lucide-react';
-
-const WorkerRegister = () => {
+const ContractorRegister = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // 1: Mobile, 2: OTP, 3: Details
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
-    skill: 'Labour',
+    email: '',
     location: '',
-    experience: '0 years',
-    dailyWage: ''
+    companyName: '',
+    gstNumber: ''
   });
 
   const [otp, setOtp] = useState('');
@@ -33,35 +25,18 @@ const WorkerRegister = () => {
   const [tempToken, setTempToken] = useState('');
   const [tempUserId, setTempUserId] = useState('');
 
-  const skills = [
-    'Mistri',
-    'Plumber',
-    'Electrician',
-    'Painter',
-    'Carpenter',
-    'Labour',
-    'Driver',
-    'Maid',
-    'Other'
-  ];
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // SEND OTP
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const res = await axios.post(
-        'http://localhost:5000/api/auth/send-otp',
-        { mobile: formData.mobile }
-      );
-
+      const res = await axios.post('http://localhost:5000/api/auth/send-otp', { mobile: formData.mobile });
       if (res.data.success) {
         if (res.data.otp) setDemoOtp(res.data.otp);
         setStep(2);
@@ -73,21 +48,17 @@ const WorkerRegister = () => {
     }
   };
 
-  // VERIFY OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const res = await axios.post(
-        'http://localhost:5000/api/auth/verify-otp',
-        {
-          mobile: formData.mobile,
-          otp,
-          type: 'worker'
-        }
-      );
+      const res = await axios.post('http://localhost:5000/api/auth/verify-otp', {
+        mobile: formData.mobile,
+        otp,
+        type: 'contractor'
+      });
 
       if (res.data.success) {
         setTempToken(res.data.token);
@@ -101,40 +72,32 @@ const WorkerRegister = () => {
     }
   };
 
-  // REGISTER WORKER
   const handleSubmitDetails = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const res = await axios.post(
-        'http://localhost:5000/api/workers/register',
-        formData
-      );
+      const res = await axios.post('http://localhost:5000/api/contractors/register', formData);
 
       if (res.data.success) {
-        const worker = res.data.worker;
+        const contractor = res.data.contractor;
         
         const userData = {
           userId: tempUserId,
-          workerId: worker._id,
-          name: worker.name,
-          mobile: worker.mobile,
-          skill: worker.skill,
-          experience: worker.experience,
-          location: worker.location,
-          isVerified: worker.isVerified || false,
-          isAvailable: worker.isAvailable !== undefined ? worker.isAvailable : true,
-          dailyWage: worker.dailyWage || 0,
-          earnings: 0,
-          jobsDone: 0,
-          type: 'worker',
+          contractorId: contractor._id,
+          name: contractor.name,
+          mobile: contractor.mobile,
+          email: contractor.email,
+          location: contractor.location,
+          companyName: contractor.companyName,
+          isVerified: contractor.isVerified,
+          type: 'contractor',
           token: tempToken
         };
 
         login(userData);
-        navigate('/worker-dashboard');
+        navigate('/contractor-dashboard');
       }
     } catch (err) {
       setError(err.response?.data?.msg || 'Registration failed');
@@ -146,15 +109,14 @@ const WorkerRegister = () => {
   return (
     <div className="py-12 px-4 bg-brand-light min-h-[80vh]">
       <div className="max-w-md mx-auto bg-white rounded-2xl shadow-sm border p-6 md:p-8">
-
         <h2 className="text-2xl font-bold text-center text-brand-dark mb-1">
-          Worker Registration
+          Contractor Registration
         </h2>
 
         <p className="text-center text-gray-500 mb-8 text-sm">
-          {step === 1 && 'Create your digital profile'}
+          {step === 1 && 'Start posting construction projects'}
           {step === 2 && 'Verify your number'}
-          {step === 3 && 'Fill your details'}
+          {step === 3 && 'Complete your profile'}
         </p>
 
         {error && (
@@ -163,7 +125,6 @@ const WorkerRegister = () => {
           </div>
         )}
 
-        {/* STEP 1: MOBILE */}
         {step === 1 && (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <div className="relative">
@@ -186,7 +147,6 @@ const WorkerRegister = () => {
           </form>
         )}
 
-        {/* STEP 2: OTP */}
         {step === 2 && (
           <>
             {demoOtp && (
@@ -217,7 +177,6 @@ const WorkerRegister = () => {
           </>
         )}
 
-        {/* STEP 3: DETAILS */}
         {step === 3 && (
           <form onSubmit={handleSubmitDetails} className="space-y-4">
             <div className="relative">
@@ -234,17 +193,28 @@ const WorkerRegister = () => {
             </div>
 
             <div className="relative">
-              <Briefcase className="absolute left-3 top-3.5 text-gray-400" size={20} />
-              <select
-                name="skill"
-                value={formData.skill}
+              <Building2 className="absolute left-3 top-3.5 text-gray-400" size={20} />
+              <input
+                type="text"
+                name="companyName"
+                placeholder="Company Name"
+                value={formData.companyName}
                 onChange={handleChange}
                 className="input-field pl-10"
-              >
-                {skills.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <Mail className="absolute left-3 top-3.5 text-gray-400" size={20} />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                className="input-field pl-10"
+              />
             </div>
 
             <div className="relative">
@@ -260,33 +230,26 @@ const WorkerRegister = () => {
               />
             </div>
 
-            <input
-              type="text"
-              name="experience"
-              placeholder="Experience (e.g., 5 years)"
-              value={formData.experience}
-              onChange={handleChange}
-              className="input-field"
-            />
-
-            <input
-              type="number"
-              name="dailyWage"
-              placeholder="Expected Daily Wage"
-              value={formData.dailyWage}
-              onChange={handleChange}
-              className="input-field"
-            />
+            <div className="relative">
+              <FileText className="absolute left-3 top-3.5 text-gray-400" size={20} />
+              <input
+                type="text"
+                name="gstNumber"
+                placeholder="GST Number (Optional)"
+                value={formData.gstNumber}
+                onChange={handleChange}
+                className="input-field pl-10"
+              />
+            </div>
 
             <button disabled={loading} className="btn-primary w-full">
               {loading ? 'Registering...' : 'Complete Registration'}
             </button>
           </form>
         )}
-
       </div>
     </div>
   );
 };
 
-export default WorkerRegister;
+export default ContractorRegister;

@@ -14,7 +14,7 @@ export const LanguageProvider = ({ children }) => {
             dashboard: "Employer Dashboard",
             registerWorker: "Register as Worker",
             hireWorker: "Hire Worker",
-            heroTitle: "Digital Labour Chowk",
+            heroTitle: "WorkSathi",
             heroSubtitle: "Hire verified & skilled workers near you — instantly.",
             howItWorks: "How It Works",
             step1: "Worker registers & gets verified",
@@ -56,7 +56,7 @@ export const LanguageProvider = ({ children }) => {
             aboutDignityDesc: "Respect for work",
             aboutImpact: "Impact",
             aboutImpactDesc: "Real Livelihoods",
-            whyChooseTitle: "Why Ek Digital Labour Chowk?",
+            whyChooseTitle: "Why WorkSathi?",
             whyChooseDesc: "Every city has a labour chowk—a physical spot where workers gather. It's chaotic, unorganized, and often leaves workers empty-handed.",
             quote: "\"Technology should not just be for the office goers, but for the hands that build our offices.\""
         },
@@ -66,7 +66,7 @@ export const LanguageProvider = ({ children }) => {
             dashboard: "नियोक्ता डैशबोर्ड",
             registerWorker: "मज़दूर पंजीकरण",
             hireWorker: "मज़दूर चाहिए",
-            heroTitle: "डिजिटल लेबर चौक",
+            heroTitle: "वर्कसाथी",
             heroSubtitle: "वेरीफाइड मज़दूर, मिस्त्री, प्लंबर अब 1 क्लिक में।",
             howItWorks: "यह कैसे काम करता है?",
             step1: "मज़दूर अपना प्रोफाइल बनाते हैं",
@@ -108,7 +108,7 @@ export const LanguageProvider = ({ children }) => {
             aboutDignityDesc: "काम का आदर",
             aboutImpact: "प्रभाव",
             aboutImpactDesc: "असली आजीविका",
-            whyChooseTitle: "एक डिजिटल लेबर चौक क्यों?",
+            whyChooseTitle: "वर्कसाथी क्यों?",
             whyChooseDesc: "हर शहर में एक लेबर चौक होता है—मज़दूरों के इकट्ठा होने की जगह। यह अस्त-व्यस्त होता है और अक्सर मज़दूरों को खाली हाथ लौटना पड़ता है।",
             quote: "\"तकनीक सिर्फ ऑफिस जाने वालों के लिए नहीं होनी चाहिए, बल्कि उन हाथों के लिए भी होनी चाहिए जो हमारे ऑफिस बनाते हैं।\""
         }

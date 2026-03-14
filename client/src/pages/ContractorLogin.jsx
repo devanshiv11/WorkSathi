@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/useAuth';
+import { Smartphone, Lock, Building2 } from 'lucide-react';
 
-import { Smartphone, Lock, HardHat } from 'lucide-react';
-
-const WorkerLogin = () => {
-  const [step, setStep] = useState(1); // 1: Mobile, 2: OTP
+const ContractorLogin = () => {
+  const [step, setStep] = useState(1);
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
   const [demoOtp, setDemoOtp] = useState('');
@@ -15,7 +14,6 @@ const WorkerLogin = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Send OTP
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -34,7 +32,6 @@ const WorkerLogin = () => {
     }
   };
 
-  // Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,42 +41,37 @@ const WorkerLogin = () => {
       const res = await axios.post('http://localhost:5000/api/auth/verify-otp', {
         mobile,
         otp,
-        type: 'worker'
+        type: 'contractor'
       });
 
       if (res.data.success) {
-        // Fetch full worker profile
-        const workerRes = await axios.get(`http://localhost:5000/api/workers/profile/${mobile}`);
+        const contractorRes = await axios.get(`http://localhost:5000/api/contractors/profile/${mobile}`);
         
-        if (workerRes.data.success && workerRes.data.worker) {
-          const worker = workerRes.data.worker;
+        if (contractorRes.data.success && contractorRes.data.contractor) {
+          const contractor = contractorRes.data.contractor;
           
           const userData = {
             userId: res.data.user.userId,
-            workerId: worker._id,
-            name: worker.name,
-            mobile: worker.mobile,
-            skill: worker.skill,
-            experience: worker.experience,
-            location: worker.location,
-            isVerified: worker.isVerified,
-            isAvailable: worker.isAvailable,
-            dailyWage: worker.dailyWage || 0,
-            earnings: worker.earnings || 0,
-            jobsDone: worker.jobsDone || 0,
-            type: 'worker',
+            contractorId: contractor._id,
+            name: contractor.name,
+            mobile: contractor.mobile,
+            location: contractor.location,
+            email: contractor.email,
+            companyName: contractor.companyName,
+            isVerified: contractor.isVerified,
+            type: 'contractor',
             token: res.data.token
           };
 
           login(userData);
-          navigate('/worker-dashboard');
+          navigate('/contractor-dashboard');
         } else {
-          setError('Worker profile not found. Please register first.');
+          setError('Contractor profile not found. Please register first.');
         }
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.msg || 'Invalid OTP or worker not registered');
+      setError(err.response?.data?.msg || 'Invalid OTP or contractor not registered');
     } finally {
       setLoading(false);
     }
@@ -88,24 +80,20 @@ const WorkerLogin = () => {
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
-
-        {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-brand-orange bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <HardHat className="text-brand-orange" size={32} />
+          <div className="w-16 h-16 bg-purple-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Building2 className="text-purple-500" size={32} />
           </div>
-          <h2 className="text-2xl font-bold text-brand-dark">Worker Login</h2>
-          <p className="text-gray-500 text-sm">Access your profile & jobs</p>
+          <h2 className="text-2xl font-bold text-brand-dark">Contractor Login</h2>
+          <p className="text-gray-500 text-sm">Manage your construction projects</p>
         </div>
 
-        {/* Error */}
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-center text-sm">
             {error}
           </div>
         )}
 
-        {/* Demo OTP */}
         {demoOtp && step === 2 && (
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg mb-6 text-center animate-pulse">
             <p className="text-sm font-semibold mb-1">🔔 DEMO MODE OTP</p>
@@ -114,7 +102,6 @@ const WorkerLogin = () => {
           </div>
         )}
 
-        {/* Step 1: Enter Mobile */}
         {step === 1 && (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <div className="relative">
@@ -135,14 +122,13 @@ const WorkerLogin = () => {
             </button>
 
             <div className="text-center mt-4">
-              <Link to="/register-worker" className="text-brand-orange text-sm font-medium hover:underline">
-                New here? Register as Worker
+              <Link to="/contractor-register" className="text-brand-orange text-sm font-medium hover:underline">
+                New here? Register as Contractor
               </Link>
             </div>
           </form>
         )}
 
-        {/* Step 2: Enter OTP */}
         {step === 2 && (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div className="mb-4 text-center">
@@ -170,10 +156,9 @@ const WorkerLogin = () => {
             </button>
           </form>
         )}
-
       </div>
     </div>
   );
 };
 
-export default WorkerLogin;
+export default ContractorLogin;

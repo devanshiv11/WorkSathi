@@ -81,7 +81,7 @@ const About = () => {
                             The trust gap is huge.
                         </p>
                         <p className="text-gray-800 font-bold text-lg leading-relaxed">
-                            We built <span className="text-brand-orange">Ek Digital Labour Chowk</span> to bridge this gap.
+                            We built <span className="text-brand-orange">WorkSathi</span> to bridge this gap.
                             We believe that technology can bring dignity to labour.
                             By creating a direct, transparent connection, we empower workers to find work on their terms and help employers find trusted hands instantly.
                         </p>

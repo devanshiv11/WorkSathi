@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Navbar from './components/Navbar';
+import StickyCTA from './components/StickyCTA';
+
 import Home from './pages/Home';
 import WorkerRegister from './pages/WorkerRegister';
 import EmployerDashboard from './pages/EmployerDashboard';
@@ -9,11 +12,15 @@ import WorkerDashboard from './pages/WorkerDashboard';
 import WorkerLogin from './pages/WorkerLogin';
 import CampRegister from './pages/CampRegister';
 import About from './pages/About';
+import EmployerRegister from './pages/EmployerRegister';
 
 import { LanguageProvider } from './context/LanguageContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './context/AuthProvider';
 
-import StickyCTA from './components/StickyCTA';
+import ProtectedRoute from './routes/ProtectedRoute';
+import ContractorLogin from './pages/ContractorLogin';
+import ContractorRegister from './pages/ContractorRegister';
+import ContractorDashboard from './pages/ContractorDashboard';
 
 function App() {
   return (
@@ -22,26 +29,65 @@ function App() {
         <Router>
           <div className="flex flex-col min-h-screen">
             <Navbar />
+
             <main className="flex-grow">
               <Routes>
+                {/* Public Routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/register-worker" element={<WorkerRegister />} />
-                <Route path="/dashboard" element={<EmployerDashboard />} />
-                <Route path="/employer-login" element={<EmployerLogin />} />
-                <Route path="/employer-dashboard" element={<EmployerDashboard />} />
                 <Route path="/worker-login" element={<WorkerLogin />} />
-                <Route path="/worker-dashboard" element={<WorkerDashboard />} />
+                <Route path="/employer-login" element={<EmployerLogin />} />
+                <Route path="/contractor-login" element={<ContractorLogin />} />
+                <Route path="/contractor-register" element={<ContractorRegister />} />
+
+
+                <Route path="/employer-register" element={<EmployerRegister />} />
                 <Route path="/camp-register" element={<CampRegister />} />
                 <Route path="/about" element={<About />} />
-                {/* Add more routes as needed */}
+
+                {/* Employer Dashboard (Protected) */}
+                <Route
+                  path="/employer-dashboard"
+                  element={
+                    <ProtectedRoute role="employer">
+                      <EmployerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Worker Dashboard (Protected) */}
+                <Route
+                  path="/worker-dashboard"
+                  element={
+                    <ProtectedRoute role="worker">
+                      <WorkerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/contractor-dashboard"
+                  element={
+                    <ProtectedRoute role="contractor">
+                      <ContractorDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                {/* Optional legacy route */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <EmployerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </main>
+
             <StickyCTA />
-            {/* Footer removed from here as it is now in Home.jsx or can remain global if desired. 
-              Let's keep the global footer too but simplified if Home has a big one. 
-              Actually, Home has a specific footer now, so we can conditionally render or just hide this one on Home.
-              For simplicity, I'll remove the global footer duplicate since Home.jsx has the "Rich" footer.
-          */}
           </div>
         </Router>
       </AuthProvider>

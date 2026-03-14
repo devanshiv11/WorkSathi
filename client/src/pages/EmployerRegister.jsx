@@ -8,11 +8,11 @@ import {
   Smartphone,
   MapPin,
   Briefcase,
-  CheckCircle,
-  Lock
+  Lock,
+  Mail
 } from 'lucide-react';
 
-const WorkerRegister = () => {
+const EmployerRegister = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -20,10 +20,8 @@ const WorkerRegister = () => {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
-    skill: 'Labour',
-    location: '',
-    experience: '0 years',
-    dailyWage: ''
+    email: '',
+    location: ''
   });
 
   const [otp, setOtp] = useState('');
@@ -32,18 +30,6 @@ const WorkerRegister = () => {
   const [error, setError] = useState('');
   const [tempToken, setTempToken] = useState('');
   const [tempUserId, setTempUserId] = useState('');
-
-  const skills = [
-    'Mistri',
-    'Plumber',
-    'Electrician',
-    'Painter',
-    'Carpenter',
-    'Labour',
-    'Driver',
-    'Maid',
-    'Other'
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,7 +71,7 @@ const WorkerRegister = () => {
         {
           mobile: formData.mobile,
           otp,
-          type: 'worker'
+          type: 'employer'
         }
       );
 
@@ -101,7 +87,7 @@ const WorkerRegister = () => {
     }
   };
 
-  // REGISTER WORKER
+  // REGISTER EMPLOYER
   const handleSubmitDetails = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -109,32 +95,26 @@ const WorkerRegister = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/workers/register',
+        'http://localhost:5000/api/employers/register',
         formData
       );
 
       if (res.data.success) {
-        const worker = res.data.worker;
+        const employer = res.data.employer;
         
         const userData = {
           userId: tempUserId,
-          workerId: worker._id,
-          name: worker.name,
-          mobile: worker.mobile,
-          skill: worker.skill,
-          experience: worker.experience,
-          location: worker.location,
-          isVerified: worker.isVerified || false,
-          isAvailable: worker.isAvailable !== undefined ? worker.isAvailable : true,
-          dailyWage: worker.dailyWage || 0,
-          earnings: 0,
-          jobsDone: 0,
-          type: 'worker',
+          employerId: employer._id,
+          name: employer.name,
+          mobile: employer.mobile,
+          email: employer.email,
+          location: employer.location,
+          type: 'employer',
           token: tempToken
         };
 
         login(userData);
-        navigate('/worker-dashboard');
+        navigate('/employer-dashboard');
       }
     } catch (err) {
       setError(err.response?.data?.msg || 'Registration failed');
@@ -148,13 +128,13 @@ const WorkerRegister = () => {
       <div className="max-w-md mx-auto bg-white rounded-2xl shadow-sm border p-6 md:p-8">
 
         <h2 className="text-2xl font-bold text-center text-brand-dark mb-1">
-          Worker Registration
+          Employer Registration
         </h2>
 
         <p className="text-center text-gray-500 mb-8 text-sm">
-          {step === 1 && 'Create your digital profile'}
+          {step === 1 && 'Start hiring skilled workers'}
           {step === 2 && 'Verify your number'}
-          {step === 3 && 'Fill your details'}
+          {step === 3 && 'Complete your profile'}
         </p>
 
         {error && (
@@ -225,7 +205,7 @@ const WorkerRegister = () => {
               <input
                 type="text"
                 name="name"
-                placeholder="Full Name"
+                placeholder="Full Name / Company Name"
                 value={formData.name}
                 onChange={handleChange}
                 className="input-field pl-10"
@@ -234,17 +214,15 @@ const WorkerRegister = () => {
             </div>
 
             <div className="relative">
-              <Briefcase className="absolute left-3 top-3.5 text-gray-400" size={20} />
-              <select
-                name="skill"
-                value={formData.skill}
+              <Mail className="absolute left-3 top-3.5 text-gray-400" size={20} />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address (optional)"
+                value={formData.email}
                 onChange={handleChange}
                 className="input-field pl-10"
-              >
-                {skills.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className="relative">
@@ -260,24 +238,6 @@ const WorkerRegister = () => {
               />
             </div>
 
-            <input
-              type="text"
-              name="experience"
-              placeholder="Experience (e.g., 5 years)"
-              value={formData.experience}
-              onChange={handleChange}
-              className="input-field"
-            />
-
-            <input
-              type="number"
-              name="dailyWage"
-              placeholder="Expected Daily Wage"
-              value={formData.dailyWage}
-              onChange={handleChange}
-              className="input-field"
-            />
-
             <button disabled={loading} className="btn-primary w-full">
               {loading ? 'Registering...' : 'Complete Registration'}
             </button>
@@ -289,4 +249,4 @@ const WorkerRegister = () => {
   );
 };
 
-export default WorkerRegister;
+export default EmployerRegister;

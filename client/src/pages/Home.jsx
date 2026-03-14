@@ -1,15 +1,19 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, UserPlus, ShieldCheck, CheckCircle, Briefcase, Users, Warehouse, ArrowRight, Activity, Zap, Star, MapPin, Phone, Lock, Facebook, Twitter, Instagram, Mail, Heart } from 'lucide-react';
+import { Search, UserPlus, ShieldCheck, CheckCircle, Briefcase, Users, Warehouse, ArrowRight, Activity, Zap, Star, MapPin, Phone, Lock, Facebook, Twitter, Instagram, Heart, LogOut, User as UserIcon } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/useAuth';
 
 const Home = () => {
     const { t } = useLanguage();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
 
     const handleCategoryClick = (skill) => {
         navigate(`/dashboard?skill=${skill}`);
     };
+
+
 
     const categories = [
         { name: 'Mason (Mistri)', skill: 'Mistri', icon: <Warehouse size={24} className="text-orange-500" /> },
@@ -30,9 +34,48 @@ const Home = () => {
                     </svg>
                 </div>
 
-                <div className="container mx-auto max-w-4xl text-center relative z-10">
+                {/* User Profile / Auth Section
+                <div className="absolute top-6 right-6 z-20">
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <Link 
+                                to={user.type === 'worker' ? '/worker-dashboard' : '/employer-dashboard'}
+                                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 hover:bg-white/20 transition-all"
+                            >
+                                <div className="w-8 h-8 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                    {user.name?.charAt(0) || 'U'}
+                                </div>
+                                <span className="text-sm font-medium hidden md:block">{user.name || user.mobile}</span>
+                            </Link>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-red-300/30 hover:bg-red-500/30 transition-all flex items-center gap-2"
+                            >
+                                <LogOut size={16} />
+                                <span className="text-sm font-medium hidden md:block">Logout</span>
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex gap-2">
+                            <Link 
+                                to="/worker-login"
+                                className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 hover:bg-white/20 transition-all text-sm font-medium"
+                            >
+                                Worker Login
+                            </Link>
+                            <Link 
+                                to="/employer-login"
+                                className="bg-brand-orange px-4 py-2 rounded-full border border-orange-600 hover:bg-orange-600 transition-all text-sm font-medium"
+                            >
+                                Employer Login
+                            </Link>
+                        </div>
+                    )}
+                </div> */}
+
+                <div className="container mx-auto max-w-4xl text-center relative z-10 pt-12">
                     <div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm font-medium mb-6 border border-white/20">
-                        🇮🇳 India's First Digital Labour Chowk
+                        Platform connecting labourers with contractors
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                         {t('heroTitle')}
@@ -46,13 +89,15 @@ const Home = () => {
                             <Search size={22} />
                             {t('hireWorker')}
                         </Link>
-                        <Link to="/register-worker" className="btn-secondary bg-transparent border-white text-white hover:bg-white/10 w-full md:w-auto px-8 py-4 text-lg">
-                            <UserPlus size={22} />
-                            {t('registerWorker')}
-                        </Link>
+                        {!user && (
+                            <Link to="/register-worker" className="btn-secondary bg-transparent border-white text-white hover:bg-white/10 w-full md:w-auto px-8 py-4 text-lg">
+                                <UserPlus size={22} />
+                                {t('registerWorker')}
+                            </Link>
+                        )}
                     </div>
 
-                    {/* Search Preview (Dummy) */}
+                    {/* Search Preview */}
                     <div className="max-w-xl mx-auto bg-white rounded-xl p-2 flex items-center gap-2 shadow-lg animate-fade-in-up md:hidden">
                         <MapPin className="text-gray-400 ml-2" size={20} />
                         <input
@@ -67,7 +112,7 @@ const Home = () => {
                         </button>
                     </div>
 
-                    {/* Trust Badges (Near Hero) */}
+                    {/* Trust Badges */}
                     <div className="flex flex-wrap justify-center gap-4 mt-8 text-xs md:text-sm font-medium text-orange-200 opacity-90">
                         <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full border border-white/10">
                             <ShieldCheck size={16} /> Govt ID Verified
@@ -146,7 +191,6 @@ const Home = () => {
                     </div>
 
                     <div className="max-w-md mx-auto relative">
-                        {/* Decorative background blob */}
                         <div className="absolute top-0 -left-4 w-72 h-72 bg-brand-orange opacity-10 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
                         <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-400 opacity-10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
 
@@ -237,7 +281,6 @@ const Home = () => {
             {/* Impact Numbers */}
             <section className="py-20 bg-brand-dark relative overflow-hidden text-white">
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-dark to-slate-900"></div>
-                {/* Decorative circles */}
                 <div className="absolute top-10 left-10 w-32 h-32 bg-brand-orange opacity-10 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500 opacity-10 rounded-full blur-3xl"></div>
 
@@ -273,13 +316,12 @@ const Home = () => {
             <footer className="bg-slate-900 text-gray-300 py-16 px-4 border-t border-gray-800">
                 <div className="container mx-auto max-w-6xl">
                     <div className="grid md:grid-cols-4 gap-12 mb-12">
-                        {/* Brand */}
                         <div className="col-span-1 md:col-span-1">
                             <div className="flex items-center gap-2 mb-6 text-white text-2xl font-bold">
                                 <div className="bg-brand-orange p-2 rounded-lg">
                                     <Hammer size={24} className="text-white" />
                                 </div>
-                                <span>DLC</span>
+                                <span> WS </span>
                             </div>
                             <p className="text-sm leading-relaxed opacity-70 mb-6">
                                 Connecting hard-working hands with the right opportunities. Fair, Transparent, and Digital.
@@ -297,7 +339,6 @@ const Home = () => {
                             </div>
                         </div>
 
-                        {/* Quick Links */}
                         <div>
                             <h3 className="text-white font-bold mb-6">Quick Links</h3>
                             <ul className="space-y-3 text-sm">
@@ -308,7 +349,6 @@ const Home = () => {
                             </ul>
                         </div>
 
-                        {/* Legal */}
                         <div>
                             <h3 className="text-white font-bold mb-6">Support</h3>
                             <ul className="space-y-3 text-sm">
@@ -319,7 +359,6 @@ const Home = () => {
                             </ul>
                         </div>
 
-                        {/* Newsletter */}
                         <div>
                             <h3 className="text-white font-bold mb-6">Stay Updated</h3>
                             <p className="text-xs opacity-60 mb-4">Get the latest updates on labour laws and platform features.</p>
@@ -337,7 +376,7 @@ const Home = () => {
                     </div>
 
                     <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-xs opacity-40">&copy; 2026 Ek Digital Labour Chowk. All rights reserved.</p>
+                        <p className="text-xs opacity-40">&copy; 2026 WorkSathi. All rights reserved.</p>
                         <p className="text-xs opacity-60 flex items-center gap-1">
                             Built with <Heart size={12} className="text-red-500 fill-red-500" /> for India's Workforce
                         </p>
