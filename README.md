@@ -1,4 +1,4 @@
-# Ek Digital Labour Chowk 🛠️🇮🇳
+# WorkSathi 🛠️🇮🇳
 
 > **Bridging the gap between daily wagers and employers through technology.**
 
